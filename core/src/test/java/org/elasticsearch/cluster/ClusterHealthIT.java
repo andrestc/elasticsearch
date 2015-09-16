@@ -43,6 +43,20 @@ public class ClusterHealthIT extends ESIntegTestCase {
         }
     }
 
+    @Test //issue #10574
+    public void testLocalHealthWithNullIndicesActLikeAll() {
+        createIndex("test");
+        ensureGreen();
+
+        for (String node : internalCluster().getNodeNames()) {
+            logger.info("--> running cluster local health with null indices");
+            ClusterHealthResponse health = client(node).admin().cluster().prepareHealth(null).setLocal(true).setWaitForEvents(Priority.LANGUID).setTimeout("30s").get("10s");
+            assertThat(health.getStatus(), equalTo(ClusterHealthStatus.GREEN));
+            assertThat(health.isTimedOut(), equalTo(false));
+            assertThat(health.getIndices().get("test").getStatus(), equalTo(ClusterHealthStatus.GREEN));
+        }
+    }
+
     @Test
     public void testHealth() {
         logger.info("--> running cluster health on an index that does not exists");
