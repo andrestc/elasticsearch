@@ -139,8 +139,8 @@ public class DateMathParserTests extends ESTestCase {
         assertDateMathEquals("now-2d", "2014-11-16T14:27:32", now, false, null);
         assertDateMathEquals("now/m", "2014-11-18T14:27", now, false, null);
         
-        // timezone does not affect now
-        assertDateMathEquals("now/m", "2014-11-18T14:27", now, false, DateTimeZone.forID("+02:00"));
+        // timezone does affect now (issue #13607)
+        assertDateMathEquals("now/m", "2014-11-18T16:27", now, false, DateTimeZone.forID("+02:00"));
     }
 
     public void testRounding() {
